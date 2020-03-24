@@ -40,9 +40,13 @@ DINAR helps you to configure Github Actions to test and preview Odoo addons.
 
 # Docker images
 
-DINAR builds and push docker images to Github Packages. Examples for 12.0 branch of `repo-name` repository:
+DINAR builds and push docker images to Github Packages. It works
+[only](https://github.com/itpp-labs/DINAR/issues/60) for stable branches (e.g.
+`12.0`) and branches marked with `-dev-` code (e.g.
+`12.0-dev-some-new-feature`). Examples of docker images for 12.0 branch of
+`repo-name` repository:
 
-- `dinar-odoo-base-repo-name:12.0` - base odoo image with dependencies: installs packages and fetches repositories. It uses settings from [`.DINAR/image/`](editable-files/.DINAR/image/dependencies/).
+- `dinar-odoo-repo-name:12.0-base` - base odoo image with dependencies: installs packages and fetches repositories. It uses settings from [`.DINAR/image/`](editable-files/.DINAR/image/dependencies/).
 - Odoo and postgres images with preinstalled modules specified in manifest's `depends` attribute plus modules listed in `addons.include` attribute of [`.DINAR/config.yaml`](editable-files/.DINAR/config.yaml).
 
   - `dinar-odoo-repo-name:12.0`, `dinar-db-repo-name:12.0` -- modules are installed with demo data
