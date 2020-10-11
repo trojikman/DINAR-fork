@@ -7,11 +7,11 @@ branches:
 
 repos:
   itpp-labs/misc-addons:
-#  itpp-labs/pos-addons:
-#  itpp-labs/website-addons:
-#  itpp-labs/mail-addons:
-#  itpp-labs/access-addons:
-#  itpp-labs/sync-addons:
-#  itpp-labs/l10n-addons:
+  itpp-labs/pos-addons:
+  itpp-labs/website-addons:
+  itpp-labs/mail-addons:
+  itpp-labs/access-addons:
+  itpp-labs/sync-addons:
+  itpp-labs/l10n-addons:
   
   
