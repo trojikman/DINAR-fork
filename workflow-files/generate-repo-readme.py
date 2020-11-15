@@ -42,7 +42,7 @@ REPOS={
     },
 }
 
-def main(branch, repository):
+def main(token, repository, branch):
     config = get_config()
     # TODO: find new modules and mark them with :tada: emoji in README
     store_modules = {m: {store: True} for m in config.get("addons", [])}
@@ -50,8 +50,7 @@ def main(branch, repository):
     modules = dict(sorted(dict(**store_modules, **repo_modules).items(), key=lambda item: item[0]))
     title = config.get("title")
     if not title:
-        GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
-        github = Github(GITHUB_TOKEN)
+        github = Github(token)
         repo = github.get_repo(repository)
         title = repo.description
     lines = [
@@ -121,7 +120,7 @@ def cmd(command, ignore_errors=False):
 
 
 if __name__ == "__main__":
-    print(sys.argv)
-    branch = sys.argv[1]
+    token = sys.argv[1]
     repository = sys.argv[2]
-    main(branch, repository)
+    branch = sys.argv[3]
+    main(token, repository, branch)
