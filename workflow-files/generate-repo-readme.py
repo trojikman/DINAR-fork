@@ -12,42 +12,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
-import os
-import os.path
-import sys
-import itertools
 import glob
+import itertools
+import sys
 
 import yaml
-from plumbum import FG
-from plumbum.cmd import cat
 from github import Github
+from plumbum.cmd import cat
 
 BRANCHES = ["14.0", "13.0", "12.0", "11.0", "10.0", "9.0", "8.0"]
-REPOS={
-    "pos-addons": {
-        "extra_branches": ["7.0"]
-    },
-    "mail-addons": {
-    },
-    "misc-addons": {
-        "extra_branches": ["7.0"]
-    },
-    "sync-addons": {
-    },
-    "access-addons": {
-    },
-    "website-addons":{
-    },
+REPOS = {
+    "pos-addons": {"extra_branches": ["7.0"]},
+    "mail-addons": {},
+    "misc-addons": {"extra_branches": ["7.0"]},
+    "sync-addons": {},
+    "access-addons": {},
+    "website-addons": {},
 }
+
 
 def main(token, repository, branch):
     config = get_config()
     # TODO: find new modules and mark them with :tada: emoji in README
     store_modules = {m: {store: True} for m in config.get("addons", [])}
     repo_modules = get_repo_modules()
-    modules = dict(sorted(dict(**store_modules, **repo_modules).items(), key=lambda item: item[0]))
+    modules = dict(
+        sorted(dict(**store_modules, **repo_modules).items(), key=lambda item: item[0])
+    )
     title = config.get("title")
     if not title:
         github = Github(token)
@@ -55,11 +46,15 @@ def main(token, repository, branch):
         title = repo.description
     lines = [
         "[![help@itpp.dev](https://itpp.dev/images/infinity-readme.png)](mailto:help@itpp.dev)",
-        "# [%s] %s" % (branch, title),
+        "# [{}] {}".format(branch, title),
         "",
     ]
     for m, data in modules.items():
-        lines.append("<br/>:heavy_check_mark: [{module}](https://apps.odoo.com/apps/modules/{branch}/{module}/)".format(module=m, branch=branch))
+        lines.append(
+            "<br/>:heavy_check_mark: [{module}](https://apps.odoo.com/apps/modules/{branch}/{module}/)".format(
+                module=m, branch=branch
+            )
+        )
     lines += [
         "",
         "Other Addons",
@@ -70,21 +65,27 @@ def main(token, repository, branch):
     ]
     for r, data in REPOS.items():
         base_url = "https://github.com/itpp-labs/" + r
-        code = "| [itpp-labs/**%s**](%s) | " % (r, base_url)
+        code = "| [itpp-labs/**{}**]({}) | ".format(r, base_url)
         bb = []
-        for b in (BRANCHES + data.get("extra_branches", [])):
-            bb.append("[[{branch}]]({base_url}/tree/{branch}#readme)".format(branch=b, base_url=base_url))
+        for b in BRANCHES + data.get("extra_branches", []):
+            bb.append(
+                "[[{branch}]]({base_url}/tree/{branch}#readme)".format(
+                    branch=b, base_url=base_url
+                )
+            )
         code += " ".join(bb)
         code += " |"
         lines.append(code)
 
     with open("README.md", "w") as readme:
         readme.write("\n".join(lines) + "\n")
-    
-    
+
+
 def get_repo_modules():
     modules = {}
-    for path in itertools.chain(glob.glob("*/__manifest__.py"), glob.glob("*/__openerp__.py")):
+    for path in itertools.chain(
+        glob.glob("*/__manifest__.py"), glob.glob("*/__openerp__.py")
+    ):
         manifest = parse_manifest(path)
         m = path.split("/")[0]
         if manifest.get("installable", True):
