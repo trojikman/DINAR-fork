@@ -50,9 +50,9 @@ REPOS={
 def main(branch, repo_description):
     config = get_config()
     # TODO: find new modules and mark them with :tada: emoji in README
-    store_modules = [{m: {store: True}} for m in config.get("addons", [])]
+    store_modules = {{m: {store: True}} for m in config.get("addons", [])}
     repo_modules = get_repo_modules()
-    modules = dict(sorted((store_modules + repo_modules).items(), key=lambda item: item[0]))    
+    modules = dict(sorted((dict(**store_modules, **repo_modules).items(), key=lambda item: item[0]))    
     
     lines = [
         "[![help@itpp.dev](https://itpp.dev/images/infinity-readme.png)](mailto:help@itpp.dev)",
@@ -81,14 +81,13 @@ def main(branch, repo_description):
     
     
 def get_repo_modules():
-    modules = []
+    modules = {}
     for path in itertools.chain(glob.glob("*/__manifest__.py"), glob.glob("*/__openerp__.py")):
         manifest = parse_manifest(path)
-        module = path.split("/")[0]
+        m = path.split("/")[0]
         if manifest.get("installable", True):
-            modules.append({module: {}})
+            modules[m] = {}
     return modules
-    modules_data = parse_manifests(manifests)
 
 
 def get_config():
