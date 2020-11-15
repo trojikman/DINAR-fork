@@ -21,6 +21,95 @@ import yaml
 from plumbum import FG
 from plumbum.cmd import cp, git, mkdir
 
+BRANCHES = ["14.0", "13.0", "12.0", "11.0", "10.0", "9.0", "8.0"]
+NBSP=" "
+REPOS={
+    "pos-addons": {
+        "prefix": NBSP*4,
+        "extra_branches": ["7.0"]
+    },
+    "mail-addons": {
+        "prefix": NBSP*3,
+    },
+    "misc-addons": {
+        "prefix": NBSP*3,
+        "extra_branches": ["7.0"]
+    },
+    "sync-addons": {
+        "prefix": NBSP*3,
+    },
+    "access-addons": {
+        "prefix": NBSP*1,
+    },
+    "website-addons":{
+    },
+}
+
+def main(branch, repo_description):
+    config = get_config()
+    # TODO: find new modules and mark them with :tada: emoji in README
+    store_modules = [{m: {store: True}} for m in config.get("addons", [])]
+    repo_modules = get_repo_modules()
+    modules = dict(sorted((store_modules + repo_modules).items(), key=lambda item: item[0]))    
+    
+    lines = [
+        "[![help@itpp.dev](https://itpp.dev/images/infinity-readme.png)](mailto:help@itpp.dev)",
+        "# [%s] %s" % (branch, config.get("title", repo_description)),
+        "",
+    ]
+    for m, data in modules.items():
+        lines.append("* [{module}](https://apps.odoo.com/apps/modules/{branch}/{module}/)".format(module=m, branch=branch))
+    lines += [
+        "",
+        "Other Addons",
+        "",
+    ]
+    for r, data in REPOS.items():
+        base_url = "https://github.com/itpp-labs/" + r
+        code = "* [itpp-labs/%s]: " % r
+        code += data.get("prefix", "")
+        bb = []
+        for b in (BRANCHES + data.get("extra_branches", [])):
+            bb.append("[[{branch}]]({base_url}/tree/{branch}#readme)".format(branch=b, base_url=base_url))
+        code += " ".join(bb)
+        lines.append(code)
+
+    with open("README.md", "w") as readme:
+        readme.write("\n".join(lines) + "\n")
+    
+    
+def get_repo_modules():
+    # TODO
+    modules_data = parse_manifests(manifests)
+    modules_data = {
+        m: data
+        for m, data in modules_data.items()
+        if data["manifest"].get("installable", True) and m not in exclude
+    }
+
+
+def get_config():
+    try:
+        with open(".DINAR/config.yaml") as config_file:
+            config = yaml.safe_load(config_file)
+    except Exception as e:
+        print("Error on parsing .DINAR/config.yaml: %s" % e)
+        return {}
+    return config.get("repo_readme", {})
+
+
+# TODO: this is copy-pasted from analyze-modules.py
+def parse_manifests(manifests):
+    modules_data = {}
+    for module_name, manifest_path in manifests.items():
+        try:
+            manifest_data = ast.literal_eval(cat(manifest_path))
+        except Exception:
+            manifest_data = {"error": "cannot parse"}
+        modules_data[module_name] = {"manifest": manifest_data}
+
+    return modules_data
+
 
 def cmd(command, ignore_errors=False):
     print(command)
@@ -32,6 +121,7 @@ def cmd(command, ignore_errors=False):
 
 
 if __name__ == "__main__":
-    repo_path = sys.argv[1]
-
-    main(repo_path)
+    print(sys.argv)
+    branch = sys.argv[1]
+    repo_description = sys.argv[1]
+    main(branch, repo_description)
