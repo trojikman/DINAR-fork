@@ -65,8 +65,8 @@ def main(token, repository, branch):
         "Other Addons",
         "============",
         "",
-        "| Repo | Versions |",
-        "|------|----------|",
+        "| Repository | Versions |",
+        "|------------|----------|",
     ]
     for r, data in REPOS.items():
         base_url = "https://github.com/itpp-labs/" + r
