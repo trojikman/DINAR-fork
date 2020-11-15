@@ -52,7 +52,7 @@ def main(branch, repo_description):
     # TODO: find new modules and mark them with :tada: emoji in README
     store_modules = {{m: {store: True}} for m in config.get("addons", [])}
     repo_modules = get_repo_modules()
-    modules = dict(sorted((dict(**store_modules, **repo_modules).items(), key=lambda item: item[0]))    
+    modules = dict(sorted(dict(**store_modules, **repo_modules).items(), key=lambda item: item[0]))    
     
     lines = [
         "[![help@itpp.dev](https://itpp.dev/images/infinity-readme.png)](mailto:help@itpp.dev)",
