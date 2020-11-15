@@ -15,6 +15,7 @@
 import glob
 import itertools
 import sys
+import ast
 
 import yaml
 from github import Github
