@@ -22,6 +22,7 @@ import glob
 import yaml
 from plumbum import FG
 from plumbum.cmd import cat
+from github import Github
 
 BRANCHES = ["14.0", "13.0", "12.0", "11.0", "10.0", "9.0", "8.0"]
 REPOS={
@@ -41,16 +42,21 @@ REPOS={
     },
 }
 
-def main(branch, repo_description):
+def main(branch, repository):
     config = get_config()
     # TODO: find new modules and mark them with :tada: emoji in README
     store_modules = {m: {store: True} for m in config.get("addons", [])}
     repo_modules = get_repo_modules()
-    modules = dict(sorted(dict(**store_modules, **repo_modules).items(), key=lambda item: item[0]))    
-    
+    modules = dict(sorted(dict(**store_modules, **repo_modules).items(), key=lambda item: item[0]))
+    title = config.get("title")
+    if not title:
+        GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
+        github = Github(GITHUB_TOKEN)
+        repo = github.get_repo(repository)
+        title = repo.description
     lines = [
         "[![help@itpp.dev](https://itpp.dev/images/infinity-readme.png)](mailto:help@itpp.dev)",
-        "# [%s] %s" % (branch, config.get("title", repo_description)),
+        "# [%s] %s" % (branch, title),
         "",
     ]
     for m, data in modules.items():
@@ -117,5 +123,5 @@ def cmd(command, ignore_errors=False):
 if __name__ == "__main__":
     print(sys.argv)
     branch = sys.argv[1]
-    repo_description = sys.argv[2]
-    main(branch, repo_description)
+    repository = sys.argv[2]
+    main(branch, repository)
