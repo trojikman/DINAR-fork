@@ -24,7 +24,7 @@ from plumbum import FG
 from plumbum.cmd import cat
 
 BRANCHES = ["14.0", "13.0", "12.0", "11.0", "10.0", "9.0", "8.0"]
-NBSP=" "
+NBSP=chr(160)
 REPOS={
     "pos-addons": {
         "prefix": NBSP*4,
@@ -64,11 +64,12 @@ def main(branch, repo_description):
     lines += [
         "",
         "Other Addons",
+        "============",
         "",
     ]
     for r, data in REPOS.items():
         base_url = "https://github.com/itpp-labs/" + r
-        code = "* [itpp-labs/%s]: " % r
+        code = "* [itpp-labs/**%s**](%s): " % (r, base_url)
         code += data.get("prefix", "")
         bb = []
         for b in (BRANCHES + data.get("extra_branches", [])):
