@@ -24,24 +24,18 @@ from plumbum import FG
 from plumbum.cmd import cat
 
 BRANCHES = ["14.0", "13.0", "12.0", "11.0", "10.0", "9.0", "8.0"]
-NBSP=chr(160)
 REPOS={
     "pos-addons": {
-        "prefix": NBSP*4,
         "extra_branches": ["7.0"]
     },
     "mail-addons": {
-        "prefix": NBSP*3,
     },
     "misc-addons": {
-        "prefix": NBSP*3,
         "extra_branches": ["7.0"]
     },
     "sync-addons": {
-        "prefix": NBSP*3,
     },
     "access-addons": {
-        "prefix": NBSP*1,
     },
     "website-addons":{
     },
@@ -66,15 +60,17 @@ def main(branch, repo_description):
         "Other Addons",
         "============",
         "",
+        "| Repo | Versions |",
+        "|------|----------|",
     ]
     for r, data in REPOS.items():
         base_url = "https://github.com/itpp-labs/" + r
-        code = "* [itpp-labs/**%s**](%s): " % (r, base_url)
-        code += data.get("prefix", "")
+        code = "| [itpp-labs/**%s**](%s) | " % (r, base_url)
         bb = []
         for b in (BRANCHES + data.get("extra_branches", [])):
             bb.append("[[{branch}]]({base_url}/tree/{branch}#readme)".format(branch=b, base_url=base_url))
         code += " ".join(bb)
+        code += " |"
         lines.append(code)
 
     with open("README.md", "w") as readme:
@@ -121,5 +117,5 @@ def cmd(command, ignore_errors=False):
 if __name__ == "__main__":
     print(sys.argv)
     branch = sys.argv[1]
-    repo_description = sys.argv[1]
+    repo_description = sys.argv[2]
     main(branch, repo_description)
