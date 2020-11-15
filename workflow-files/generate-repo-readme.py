@@ -16,10 +16,11 @@ import json
 import os
 import os.path
 import sys
+import itertools
 
 import yaml
 from plumbum import FG
-from plumbum.cmd import cp, git, mkdir
+from plumbum.cmd import cat
 
 BRANCHES = ["14.0", "13.0", "12.0", "11.0", "10.0", "9.0", "8.0"]
 NBSP=" "
@@ -79,13 +80,14 @@ def main(branch, repo_description):
     
     
 def get_repo_modules():
-    # TODO
+    modules = []
+    for path in itertools.chain(glob.glob("*/__manifest__.py"), glob.glob("*/__openerp__.py")):
+        manifest = parse_manifest(path)
+        module = path.split("/")[0]
+        if manifest.get("installable", True):
+            modules.append({module: {}})
+    return modules
     modules_data = parse_manifests(manifests)
-    modules_data = {
-        m: data
-        for m, data in modules_data.items()
-        if data["manifest"].get("installable", True) and m not in exclude
-    }
 
 
 def get_config():
@@ -98,17 +100,12 @@ def get_config():
     return config.get("repo_readme", {})
 
 
-# TODO: this is copy-pasted from analyze-modules.py
-def parse_manifests(manifests):
-    modules_data = {}
-    for module_name, manifest_path in manifests.items():
-        try:
-            manifest_data = ast.literal_eval(cat(manifest_path))
-        except Exception:
-            manifest_data = {"error": "cannot parse"}
-        modules_data[module_name] = {"manifest": manifest_data}
-
-    return modules_data
+def parse_manifest(path):
+    try:
+        manifest_data = ast.literal_eval(cat(manifest_path))
+    except Exception:
+        manifest_data = {"error": "cannot parse"}
+    return manifest_data
 
 
 def cmd(command, ignore_errors=False):
