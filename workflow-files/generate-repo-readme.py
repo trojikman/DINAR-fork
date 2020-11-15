@@ -50,7 +50,7 @@ REPOS={
 def main(branch, repo_description):
     config = get_config()
     # TODO: find new modules and mark them with :tada: emoji in README
-    store_modules = {{m: {store: True}} for m in config.get("addons", [])}
+    store_modules = {m: {store: True} for m in config.get("addons", [])}
     repo_modules = get_repo_modules()
     modules = dict(sorted(dict(**store_modules, **repo_modules).items(), key=lambda item: item[0]))    
     
