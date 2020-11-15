@@ -106,7 +106,7 @@ def get_config():
 
 def parse_manifest(path):
     try:
-        manifest_data = ast.literal_eval(cat(manifest_path))
+        manifest_data = ast.literal_eval(cat(path))
     except Exception as e:
         print("Error on parsing %s: %s" % (path, e))
         manifest_data = {"error": "cannot parse"}
