@@ -59,7 +59,7 @@ def main(token, repository, branch):
         "",
     ]
     for m, data in modules.items():
-        lines.append("* [{module}](https://apps.odoo.com/apps/modules/{branch}/{module}/)".format(module=m, branch=branch))
+        lines.append("<br/>:heavy_check_mark: [{module}](https://apps.odoo.com/apps/modules/{branch}/{module}/)".format(module=m, branch=branch))
     lines += [
         "",
         "Other Addons",
