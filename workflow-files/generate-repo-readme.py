@@ -30,9 +30,13 @@ REPOS = {
     "access-addons": {},
     "website-addons": {},
 }
+ODOO_VERSIONS = ["14.0", "13.0", "12.0", "11.0", "10.0", "9.0", "8.0", "7.0"]
 
 
 def main(token, repository, branch):
+    if branch not in ODOO_VERSIONS:
+        return
+
     config = get_config()
     # TODO: find new modules and mark them with :tada: emoji in README
     store_modules = {m: {"store": True} for m in config.get("addons", [])}
