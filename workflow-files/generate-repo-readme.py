@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import ast
 import glob
 import itertools
 import sys
-import ast
 
 import yaml
 from github import Github
@@ -35,7 +35,7 @@ REPOS = {
 def main(token, repository, branch):
     config = get_config()
     # TODO: find new modules and mark them with :tada: emoji in README
-    store_modules = {m: {store: True} for m in config.get("addons", [])}
+    store_modules = {m: {"store": True} for m in config.get("addons", [])}
     repo_modules = get_repo_modules()
     modules = dict(
         sorted(dict(**store_modules, **repo_modules).items(), key=lambda item: item[0])
@@ -50,7 +50,7 @@ def main(token, repository, branch):
         "# [{}] {}".format(branch, title),
         "",
     ]
-    for m, data in modules.items():
+    for m, _data in modules.items():
         lines.append(
             "<br/>:heavy_check_mark: [{module}](https://apps.odoo.com/apps/modules/{branch}/{module}/)".format(
                 module=m, branch=branch
@@ -108,7 +108,7 @@ def parse_manifest(path):
     try:
         manifest_data = ast.literal_eval(cat(path))
     except Exception as e:
-        print("Error on parsing %s: %s" % (path, e))
+        print("Error on parsing {}: {}".format(path, e))
         manifest_data = {"error": "cannot parse"}
     return manifest_data
 
